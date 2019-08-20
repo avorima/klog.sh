@@ -42,7 +42,7 @@ klog::Fatal() {
     local a=("$@")
     local msg=$(IFS=; echo "${a[*]}")
     echo "F$(date +"%m%d") $(date +$DATESTR) $$ $(basename "${c[1]}"):${c[0]}] $msg" 1>&2
-    exit 1
+    exit 255
 }
 
 klog::Fatalf() {
@@ -51,5 +51,5 @@ klog::Fatalf() {
     local a=("$@")
     msg=$(printf "$1" ${a[@]:1})
     echo "F$(date +"%m%d") $(date +$DATESTR) $$ $(basename "${c[1]}"):${c[0]}] $msg" 1>&2
-    exit 1
+    exit 255
 }
