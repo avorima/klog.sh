@@ -7,64 +7,59 @@ else
     DATESTR="%H:%M:%S"
 fi
 
+__join() { local IFS=$1; echo "$*"; }
+
+__writeHeader() {
+    local c=($(caller 1))
+    printf "%s%s %s %7d %s:%d] " \
+        "$1" "$(date +%m%d)" "$(date +$DATESTR)" $$ \
+        "$(basename "${c[2]}")" "${c[0]}" 1>&2
+}
+
 klog::Info() {
-    local c=($(caller))
-    local a=("$@")
-    local msg=$(IFS=; echo "${a[*]}")
-    echo "I$(date +"%m%d") $(date +$DATESTR) $$ $(basename "${c[1]}"):${c[0]}] $msg"
+    __writeHeader "I"
+    echo -e "$(__join "" "$@")"
+}
+
+klog::Infoln() {
+    __writeHeader "I"
+    echo -e "$@" 1>&2
 }
 
 klog::Infof() {
-    local c=($(caller))
-    local msg
+    __writeHeader "I"
     local a=("$@")
-    msg=$(printf "$1" ${a[@]:1})
-    echo "I$(date +"%m%d") $(date +$DATESTR) $$ $(basename "${c[1]}"):${c[0]}] $msg"
+    echo -e "$(printf "$1" ${a[@]:1})" 1>&2
 }
 
 klog::Warning() {
-    local c=($(caller))
-    local a=("$@")
-    local msg=$(IFS=; echo "${a[*]}")
-    echo "W$(date +"%m%d") $(date +$DATESTR) $$ $(basename "${c[1]}"):${c[0]}] $msg" 1>&2
+    __writeHeader "W"
+    echo -e "$@" 1>&2
 }
 
 klog::Warningf() {
-    local c=($(caller))
-    local msg
+    __writeHeader "W"
     local a=("$@")
-    msg=$(printf "$1" ${a[@]:1})
-    echo "W$(date +"%m%d") $(date +$DATESTR) $$ $(basename "${c[1]}"):${c[0]}] $msg" 1>&2
+    echo -e "$(printf "$1" ${a[@]:1})" 1>&2
+}
+
+klog::Warningln() {
+    __writeHeader "W"
+    echo -e "$@" 1>&2
 }
 
 klog::Error() {
-    local c=($(caller))
-    local a=("$@")
-    local msg=$(IFS=; echo "${a[*]}")
-    echo "E$(date +"%m%d") $(date +$DATESTR) $$ $(basename "${c[1]}"):${c[0]}] $msg" 1>&2
+    __writeHeader "E"
+    echo -e "$(__join "" "$@")" 1>&2
 }
 
 klog::Errorf() {
-    local c=($(caller))
-    local msg
+    __writeHeader "E"
     local a=("$@")
-    msg=$(printf "$1" ${a[@]:1})
-    echo "E$(date +"%m%d") $(date +$DATESTR) $$ $(basename "${c[1]}"):${c[0]}] $msg" 1>&2
+    echo -e "$(printf "$1" ${a[@]:1})" 1>&2
 }
 
-klog::Fatal() {
-    local c=($(caller))
-    local a=("$@")
-    local msg=$(IFS=; echo "${a[*]}")
-    echo "F$(date +"%m%d") $(date +$DATESTR) $$ $(basename "${c[1]}"):${c[0]}] $msg" 1>&2
-    exit 255
-}
-
-klog::Fatalf() {
-    local c=($(caller))
-    local msg
-    local a=("$@")
-    msg=$(printf "$1" ${a[@]:1})
-    echo "F$(date +"%m%d") $(date +$DATESTR) $$ $(basename "${c[1]}"):${c[0]}] $msg" 1>&2
-    exit 255
+klog::Errorln() {
+    __writeHeader "E"
+    echo -e "$@" 1>&2
 }
